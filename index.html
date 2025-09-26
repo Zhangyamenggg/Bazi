@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>五行命理测算 | Five Elements Calculator</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Microsoft YaHei',Arial,sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px}
+    .container{background:rgba(255,255,255,.95);border-radius:20px;padding:40px;box-shadow:0 20px 40px rgba(0,0,0,.1);max-width:520px;width:100%;backdrop-filter:blur(10px);position:relative}
+    .lang-switcher{position:absolute;top:20px;right:20px;display:flex;gap:5px;background:rgba(255,255,255,.9);padding:5px;border-radius:20px;box-shadow:0 2px 10px rgba(0,0,0,.1)}
+    .lang-btn{padding:6px 12px;border:none;background:transparent;cursor:pointer;border-radius:15px;font-size:14px;transition:.2s;color:#666}
+    .lang-btn.active{background:linear-gradient(45deg,#667eea,#764ba2);color:#fff}
+    h1{text-align:center;color:#4a5568;margin-bottom:20px;font-size:2rem;background:linear-gradient(45deg,#667eea,#764ba2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .sub{color:#64748b;text-align:center;margin-bottom:24px;font-size:.95rem}
+    .input-group{margin-bottom:20px}
+    label{display:block;margin-bottom:8px;color:#4a5568;font-weight:bold}
+    input[type="date"]{width:100%;padding:14px;border:2px solid #e2e8f0;border-radius:10px;background:#f8fafc;font-size:1.05rem;transition:.2s}
+    input[type="date"]:focus{outline:none;border-color:#667eea;box-shadow:0 0 15px rgba(102,126,234,.3);transform:translateY(-1px)}
+    .calculate-btn{width:100%;padding:14px;background:linear-gradient(45deg,#667eea,#764ba2);color:#fff;border:0;border-radius:10px;font-size:1.1rem;font-weight:bold;cursor:pointer;transition:.2s;margin-bottom:18px}
+    .calculate-btn:hover{transform:translateY(-2px);box-shadow:0 10px 20px rgba(102,126,234,.35)}
+    .result{margin-top:10px;padding:18px;background:linear-gradient(135deg,#f8fafc,#e2e8f0);border-radius:15px;border-left:5px solid #667eea}
+    .element-bar{margin-bottom:16px}
+    .element-label{display:flex;justify-content:space-between;margin-bottom:8px;font-weight:bold}
+    .progress-bar{height:18px;background:#e2e8f0;border-radius:10px;overflow:hidden}
+    .progress-fill{height:100%;border-radius:10px;transition:width 1s ease-in-out;position:relative}
+    .progress-fill::after{content:'';position:absolute;inset:0;background:linear-gradient(45deg,rgba(255,255,255,.3) 25%,transparent 25%,transparent 75%,rgba(255,255,255,.3) 75%);background-size:8px 8px;animation:slide 2s linear infinite}
+    @keyframes slide{0%{transform:translateX(-8px)}100%{transform:translateX(8px)}}
+    .element-金,.element-Metal{background:linear-gradient(45deg,#ffd700,#ffed4e);color:#b45309}
+    .element-木,.element-Wood{background:linear-gradient(45deg,#22c55e,#4ade80);color:#15803d}
+    .element-水,.element-Water{background:linear-gradient(45deg,#3b82f6,#60a5fa);color:#1d4ed8}
+    .element-火,.element-Fire{background:linear-gradient(45deg,#ef4444,#f87171);color:#dc2626}
+    .element-土,.element-Earth{background:linear-gradient(45deg,#a3a3a3,#d4d4d8);color:#525252}
+    .hidden{display:none}
+    .fade-in{animation:fadeIn .8s ease-in}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+    .tip{margin-top:10px;color:#64748b;font-size:.88rem}
+    .fortune-text{margin-top:12px;padding:12px;background:rgba(102,126,234,.08);border-radius:10px;color:#4a5568;line-height:1.6}
+    .crystal-advice{margin-top:12px;padding:12px;background:rgba(147,51,234,.08);border-radius:10px;color:#4a5568;line-height:1.6}
+    .crystal-advice strong{color:#7c3aed}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="lang-switcher">
+      <button class="lang-btn active" onclick="switchLang('zh')">中文</button>
+      <button class="lang-btn" onclick="switchLang('en')">EN</button>
+    </div>
+
+    <h1 class="lang-text" data-zh="🔮 五行命理测算" data-en="🔮 Five Elements Calculator">🔮 五行命理测算</h1>
+    <p class="sub lang-text" data-zh="简化模型：使用公历年柱 + 近似月/日柱，仅供娱乐参考" data-en="Simplified model: Using solar calendar + approximate calculation, for entertainment only">简化模型：使用公历年柱 + 近似月/日柱，仅供娱乐参考</p>
+
+    <div class="input-group">
+      <label for="birthday" class="lang-text" data-zh="请输入您的出生日期：" data-en="Please enter your birth date:">请输入您的出生日期：</label>
+      <input type="date" id="birthday" required>
+    </div>
+
+    <button class="calculate-btn lang-text" onclick="calculateElements()" data-zh="✨ 开始测算五行" data-en="✨ Calculate Elements">✨ 开始测算五行</button>
+
+    <div id="result" class="result hidden">
+      <h3 style="margin-bottom:14px;color:#4a5568;text-align:center;" class="lang-text" data-zh="您的五行分布" data-en="Your Five Elements Distribution">您的五行分布</h3>
+
+      <div class="element-bar">
+        <div class="element-label"><span class="element-name-金">🥇 金</span><span id="金-percent">0%</span></div>
+        <div class="progress-bar"><div class="progress-fill element-金" id="金-bar" style="width:0%"></div></div>
+      </div>
+      <div class="element-bar">
+        <div class="element-label"><span class="element-name-木">🌲 木</span><span id="木-percent">0%</span></div>
+        <div class="progress-bar"><div class="progress-fill element-木" id="木-bar" style="width:0%"></div></div>
+      </div>
+      <div class="element-bar">
+        <div class="element-label"><span class="element-name-水">💧 水</span><span id="水-percent">0%</span></div>
+        <div class="progress-bar"><div class="progress-fill element-水" id="水-bar" style="width:0%"></div></div>
+      </div>
+      <div class="element-bar">
+        <div class="element-label"><span class="element-name-火">🔥 火</span><span id="火-percent">0%</span></div>
+        <div class="progress-bar"><div class="progress-fill element-火" id="火-bar" style="width:0%"></div></div>
+      </div>
+      <div class="element-bar">
+        <div class="element-label"><span class="element-name-土">🏔️ 土</span><span id="土-percent">0%</span></div>
+        <div class="progress-bar"><div class="progress-fill element-土" id="土-bar" style="width:0%"></div></div>
+      </div>
+
+      <div class="tip" id="gz-tip"></div>
+      <div class="fortune-text" id="fortune-text"></div>
+      <div class="crystal-advice" id="crystal-advice"></div>
+    </div>
+  </div>
+
+  <script>
+    let currentLang = 'zh';
+
+    // 正确的天干、地支顺序
+    const TIAN_GAN = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+    const DI_ZHI   = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+
+    // 五行映射
+    const GAN_WX = {'甲':'木','乙':'木','丙':'火','丁':'火','戊':'土','己':'土','庚':'金','辛':'金','壬':'水','癸':'水'};
+    const ZHI_WX = {'子':'水','丑':'土','寅':'木','卯':'木','辰':'土','巳':'火','午':'火','未':'土','申':'金','酉':'金','戌':'土','亥':'水'};
+
+    // 元素名称映射
+    const elementNames = {
+      zh: {'金':'金', '木':'木', '水':'水', '火':'火', '土':'土'},
+      en: {'金':'Metal', '木':'Wood', '水':'Water', '火':'Fire', '土':'Earth'}
+    };
+
+    // 多语言文本
+    const texts = {
+      zh: {
+        '金': {
+          main: '金旺：坚毅果断、组织力强，适合管理/金融/法务等工作。',
+          lack: '缺少的元素：',
+          crystal: '水晶建议：'
+        },
+        '木': {
+          main: '木旺：生发向上、适应强，适合教育/创意/医疗等工作。',
+          lack: '缺少的元素：',
+          crystal: '水晶建议：'
+        },
+        '水': {
+          main: '水旺：智慧灵动、洞察力强，适合研究/咨询/传播等工作。',
+          lack: '缺少的元素：',
+          crystal: '水晶建议：'
+        },
+        '火': {
+          main: '火旺：热情外向、感染力强，适合销售/传媒/表演等工作。',
+          lack: '缺少的元素：',
+          crystal: '水晶建议：'
+        },
+        '土': {
+          main: '土旺：稳重可靠、耐心负责，适合运营/人事/服务等工作。',
+          lack: '缺少的元素：',
+          crystal: '水晶建议：'
+        }
+      },
+      en: {
+        '金': {
+          main: 'Metal dominant: Determined and organized, suitable for management/finance/legal work.',
+          lack: 'Lacking elements: ',
+          crystal: 'Crystal recommendations: '
+        },
+        '木': {
+          main: 'Wood dominant: Growing and adaptive, suitable for education/creative/medical work.',
+          lack: 'Lacking elements: ',
+          crystal: 'Crystal recommendations: '
+        },
+        '水': {
+          main: 'Water dominant: Intelligent and insightful, suitable for research/consulting/communication.',
+          lack: 'Lacking elements: ',
+          crystal: 'Crystal recommendations: '
+        },
+        '火': {
+          main: 'Fire dominant: Enthusiastic and charismatic, suitable for sales/media/performance.',
+          lack: 'Lacking elements: ',
+          crystal: 'Crystal recommendations: '
+        },
+        '土': {
+          main: 'Earth dominant: Stable and reliable, suitable for operations/HR/service work.',
+          lack: 'Lacking elements: ',
+          crystal: 'Crystal recommendations: '
+        }
+      }
+    };
+
+    // 水晶对应表
+    const crystalMap = {
+      zh: {
+        '金': '白水晶、钛晶、金发晶、银发晶',
+        '木': '绿幽灵、绿发晶、孔雀石、绿松石',
+        '水': '黑曜石、黑发晶、海蓝宝、蓝水晶',
+        '火': '红玛瑙、红发晶、石榴石、红纹石',
+        '土': '黄水晶、虎眼石、黄玉、琥珀'
+      },
+      en: {
+        '金': 'Clear Quartz, Rutilated Quartz, Gold Rutile Quartz, Silver Rutile Quartz',
+        '木': 'Green Phantom Quartz, Green Rutile Quartz, Malachite, Turquoise',
+        '水': 'Obsidian, Black Rutile Quartz, Aquamarine, Blue Crystal',
+        '火': 'Red Agate, Red Rutile Quartz, Garnet, Rhodochrosite',
+        '土': 'Citrine, Tiger Eye, Yellow Topaz, Amber'
+      }
+    };
+
+    function switchLang(lang) {
+      currentLang = lang;
+      document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      // 更新所有带有lang-text类的元素
+      document.querySelectorAll('.lang-text').forEach(el => {
+        el.textContent = el.getAttribute(`data-${lang}`);
+      });
+
+      // 更新元素名称
+      ['金','木','水','火','土'].forEach(el => {
+        const nameEl = document.querySelector(`.element-name-${el}`);
+        if(nameEl) {
+          const icon = nameEl.textContent.split(' ')[0];
+          nameEl.textContent = icon + ' ' + elementNames[lang][el];
+        }
+      });
+
+      // 如果有结果，重新渲染
+      if(!document.getElementById('result').classList.contains('hidden')) {
+        const lastGZ = window.lastGZ;
+        const lastPct = window.lastPct;
+        if(lastGZ && lastPct) {
+          renderText(lastGZ, lastPct);
+        }
+      }
+    }
+
+    // 近似：按公历年推年柱（未按立春切换，娱乐用）
+    function getYearGZ(gYear){
+      const gan = TIAN_GAN[(gYear - 4) % 10];
+      const zhi = DI_ZHI[(gYear - 4) % 12];
+      return gan + zhi;
+    }
+
+    // 近似：构造"月/日柱"的索引（仅作娱乐，不是正统算法）
+    function getPseudoGZ(seed){
+      const gan = TIAN_GAN[(seed) % 10];
+      const zhi = DI_ZHI[(seed) % 12];
+      return gan + zhi;
+    }
+
+    function calculateElements(){
+      const birthday = document.getElementById('birthday').value;
+      if(!birthday){ 
+        alert(currentLang === 'zh' ? '请选择您的出生日期！' : 'Please select your birth date!'); 
+        return; 
+      }
+
+      const d = new Date(birthday + 'T12:00:00'); // 避免时区零点偏移
+      const y = d.getFullYear(), m = d.getMonth() + 1, day = d.getDate();
+
+      // 年柱（近似）
+      const yearGZ = getYearGZ(y);
+      // 月/日柱（近似推法：仅为有趣展示）
+      const monthGZ = getPseudoGZ(y * 12 + m);
+      const dayGZ   = getPseudoGZ(y * 372 + m * 31 + day);
+
+      const gans  = [yearGZ[0], monthGZ[0], dayGZ[0]];
+      const zhis  = [yearGZ[1], monthGZ[1], dayGZ[1]];
+
+      const tally = {'金':0,'木':0,'水':0,'火':0,'土':0};
+      gans.forEach(g => tally[GAN_WX[g]]++);
+      zhis.forEach(z => tally[ZHI_WX[z]]++);
+
+      // 季节加权（娱乐效果）
+      const season = (m>=3&&m<=5)?'木':(m>=6&&m<=8)?'火':(m>=9&&m<=11)?'金':'水';
+      tally[season] += 1;
+      tally['土']   += Math.floor(day/10); // 日期对"土"的轻微加权
+
+      const total = Object.values(tally).reduce((a,b)=>a+b,0);
+      const pct = {};
+      Object.keys(tally).forEach(k => pct[k] = Math.round(100 * tally[k] / total));
+      const sum = Object.values(pct).reduce((a,b)=>a+b,0);
+      if(sum !== 100){
+        const maxK = Object.keys(pct).reduce((a,b)=>pct[a]>pct[b]?a:b);
+        pct[maxK] += (100 - sum);
+      }
+
+      // 保存结果供语言切换时使用
+      window.lastGZ = {yearGZ, monthGZ, dayGZ};
+      window.lastPct = pct;
+
+      render({yearGZ, monthGZ, dayGZ}, pct);
+    }
+
+    function render(gz, pct){
+      const result = document.getElementById('result');
+      result.classList.remove('hidden'); 
+      result.classList.add('fade-in');
+
+      ['金','木','水','火','土'].forEach(k=>{
+        document.getElementById(`${k}-percent`).textContent = pct[k] + '%';
+        setTimeout(()=>{ document.getElementById(`${k}-bar`).style.width = pct[k]+'%'; }, 200);
+      });
+
+      renderText(gz, pct);
+    }
+
+    function renderText(gz, pct) {
+      // 干支显示
+      if(currentLang === 'zh') {
+        document.getElementById('gz-tip').innerHTML =
+          `年柱：<b>${gz.yearGZ}</b>　月柱（近似）：<b>${gz.monthGZ}</b>　日柱（近似）：<b>${gz.dayGZ}</b>`;
+      } else {
+        document.getElementById('gz-tip').innerHTML =
+          `Year Pillar: <b>${gz.yearGZ}</b>　Month Pillar (approx): <b>${gz.monthGZ}</b>　Day Pillar (approx): <b>${gz.dayGZ}</b>`;
+      }
+
+      // 找出主导元素和缺失元素
+      const maxEl = Object.keys(pct).reduce((a,b)=> pct[a]>pct[b]?a:b );
+      const lackingElements = Object.keys(pct).filter(k => pct[k] <= 10);
+
+      // 主要性格分析
+      document.getElementById('fortune-text').textContent = texts[currentLang][maxEl].main;
+
+      // 水晶建议
+      let crystalText = '';
+      if(lackingElements.length > 0) {
+        const lackNames = lackingElements.map(el => elementNames[currentLang][el]).join('、');
+        crystalText = texts[currentLang][maxEl].lack + lackNames + '<br>';
+        
+        const crystalSuggestions = lackingElements.map(el => {
+          const elName = elementNames[currentLang][el];
+          const crystals = crystalMap[currentLang][el];
+          return `<strong>${elName}:</strong> ${crystals}`;
+        }).join('<br>');
+        
+        crystalText += texts[currentLang][maxEl].crystal + '<br>' + crystalSuggestions;
+      } else {
+        if(currentLang === 'zh') {
+          crystalText = '五行较为均衡！可选择对应您主导元素的水晶：<br>' + crystalMap[currentLang][maxEl];
+        } else {
+          crystalText = 'Your elements are well-balanced! You may choose crystals for your dominant element:<br>' + crystalMap[currentLang][maxEl];
+        }
+      }
+      
+      document.getElementById('crystal-advice').innerHTML = crystalText;
+    }
+  </script>
+</body>
+</html>
