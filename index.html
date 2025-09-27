@@ -43,41 +43,41 @@
 <body>
   <div class="container">
     <div class="lang-switcher">
-      <button class="lang-btn active" onclick="switchLang('zh')">中文</button>
-      <button class="lang-btn" onclick="switchLang('en')">EN</button>
+      <button class="lang-btn" onclick="switchLang('zh')">中文</button>
+      <button class="lang-btn active" onclick="switchLang('en')">EN</button>
     </div>
 
-    <h1 class="lang-text" data-zh="🔮 五行命理测算" data-en="🔮 Five Elements Calculator">🔮 五行命理测算</h1>
-    <p class="sub lang-text" data-zh="简化模型：使用公历年柱 + 近似月/日柱，仅供娱乐参考" data-en="Simplified model: Using solar calendar + approximate calculation, for entertainment only">简化模型：使用公历年柱 + 近似月/日柱，仅供娱乐参考</p>
+    <h1 class="lang-text" data-zh="🔮 五行命理测算" data-en="🔮 Five Elements Calculator">🔮 Five Elements Calculator</h1>
+    <p class="sub lang-text" data-zh="简化模型：使用公历年柱 + 近似月/日柱，仅供娱乐参考" data-en="Simplified model: Using solar calendar + approximate calculation, for entertainment only">Simplified model: Using solar calendar + approximate calculation, for entertainment only</p>
 
     <div class="input-group">
-      <label for="birthday" class="lang-text" data-zh="请输入您的出生日期：" data-en="Please enter your birth date:">请输入您的出生日期：</label>
+      <label for="birthday" class="lang-text" data-zh="请输入您的出生日期：" data-en="Please enter your birth date:">Please enter your birth date:</label>
       <input type="date" id="birthday" required>
     </div>
 
-    <button class="calculate-btn lang-text" onclick="calculateElements()" data-zh="✨ 开始测算五行" data-en="✨ Calculate Elements">✨ 开始测算五行</button>
+    <button class="calculate-btn lang-text" onclick="calculateElements()" data-zh="✨ 开始测算五行" data-en="✨ Calculate Elements">✨ Calculate Elements</button>
 
     <div id="result" class="result hidden">
-      <h3 style="margin-bottom:14px;color:#4a5568;text-align:center;" class="lang-text" data-zh="您的五行分布" data-en="Your Five Elements Distribution">您的五行分布</h3>
+      <h3 style="margin-bottom:14px;color:#4a5568;text-align:center;" class="lang-text" data-zh="您的五行分布" data-en="Your Five Elements Distribution">Your Five Elements Distribution</h3>
 
       <div class="element-bar">
-        <div class="element-label"><span class="element-name-金">🥇 金</span><span id="金-percent">0%</span></div>
+        <div class="element-label"><span class="element-name-金">🥇 Metal</span><span id="金-percent">0%</span></div>
         <div class="progress-bar"><div class="progress-fill element-金" id="金-bar" style="width:0%"></div></div>
       </div>
       <div class="element-bar">
-        <div class="element-label"><span class="element-name-木">🌲 木</span><span id="木-percent">0%</span></div>
+        <div class="element-label"><span class="element-name-木">🌲 Wood</span><span id="木-percent">0%</span></div>
         <div class="progress-bar"><div class="progress-fill element-木" id="木-bar" style="width:0%"></div></div>
       </div>
       <div class="element-bar">
-        <div class="element-label"><span class="element-name-水">💧 水</span><span id="水-percent">0%</span></div>
+        <div class="element-label"><span class="element-name-水">💧 Water</span><span id="水-percent">0%</span></div>
         <div class="progress-bar"><div class="progress-fill element-水" id="水-bar" style="width:0%"></div></div>
       </div>
       <div class="element-bar">
-        <div class="element-label"><span class="element-name-火">🔥 火</span><span id="火-percent">0%</span></div>
+        <div class="element-label"><span class="element-name-火">🔥 Fire</span><span id="火-percent">0%</span></div>
         <div class="progress-bar"><div class="progress-fill element-火" id="火-bar" style="width:0%"></div></div>
       </div>
       <div class="element-bar">
-        <div class="element-label"><span class="element-name-土">🏔️ 土</span><span id="土-percent">0%</span></div>
+        <div class="element-label"><span class="element-name-土">🏔️ Earth</span><span id="土-percent">0%</span></div>
         <div class="progress-bar"><div class="progress-fill element-土" id="土-bar" style="width:0%"></div></div>
       </div>
 
@@ -88,7 +88,7 @@
   </div>
 
   <script>
-    let currentLang = 'zh';
+    let currentLang = 'en';  // 改为默认英文
 
     // 正确的天干、地支顺序
     const TIAN_GAN = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
